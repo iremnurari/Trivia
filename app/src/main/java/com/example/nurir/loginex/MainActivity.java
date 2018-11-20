@@ -1,6 +1,9 @@
 package com.example.nurir.loginex;
 
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -9,6 +12,8 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
+     SQLiteOpenHelper openHelper;
+     SQLiteDatabase db;
      Button btn, btn2;
      EditText username;
      EditText password;
@@ -17,6 +22,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        openHelper = new DatabaseHelper(this);
         username = (EditText) findViewById(R.id.username);
         password = (EditText) findViewById(R.id.password);
         btn = (Button) findViewById(R.id.button);
@@ -41,8 +47,11 @@ public class MainActivity extends AppCompatActivity {
     String pass = "";
 
     void Signup(){
+        db=openHelper.getWritableDatabase();
         user = username.getText().toString();
         pass = password.getText().toString();
+        insertData(user,pass);
+        Toast.makeText(getApplicationContext(), "Registered Succesfully", Toast.LENGTH_LONG).show();
 
     }
     void Login() {
@@ -59,6 +68,13 @@ public class MainActivity extends AppCompatActivity {
         else
             Toast.makeText(getApplicationContext(), "Wrong username or password", Toast.LENGTH_LONG).show();
 
+    }
+
+    public void insertData( String user, String pass){
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(DatabaseHelper.ColUserName, user);
+        contentValues.put(DatabaseHelper.ColPassword, pass);
+        long id = db.insert(DatabaseHelper.TableName, null,contentValues);
     }
 
 
